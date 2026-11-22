@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Distribuidora de Huevos JD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============ 1. ENCABEZADO: logo (izq) · secciones (centro) · acceso (der) ============ -->
+<header class="top">
+  <a href="#nosotros" class="brand" aria-label="Inicio">
+    <img src="img/logo.png" alt="Logo Distribuidora de Huevos JD" width="64" height="55">
+    <span>Huevos <b>JD</b></span>
+  </a>
+
+  <nav class="menu" aria-label="Secciones">
+    <a href="#nosotros">Nosotros</a>
+    <a href="#recetas">Recetas y nutrición</a>
+    <a href="#pedidos">Pedidos</a>
+    <a href="#inventario" id="navInventario" hidden>Inventario</a>
+  </nav>
+
+  <div class="access" id="access">
+    <button class="btn btn-sun" id="btnAcceso">Ingresar / Registrarse</button>
+  </div>
+</header>
+
+<main>
+<!-- ============ SECCIÓN 1: NOSOTROS ============ -->
+<section id="nosotros" class="band hero">
+  <div class="hero-text">
+    <p class="kicker">Al detal y al por mayor para panaderías</p>
+    <h1>Huevos que llegan a tu mesa a pocos días de la postura</h1>
+    <p class="lead">Rotamos cada lote con el método <b>primero en entrar, primero en salir</b>: ningún huevo envejece en bodega.</p>
+    <div class="fresh-now" id="frescuraHoy">
+      <span class="dot"></span><span id="frescuraTxt">Calculando frescura del lote más reciente…</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#pedidos" class="btn btn-green">Hacer pedido</a>
+      <a href="#tamanos" class="btn btn-ghost">Ver tamaños</a>
+    </div>
+  </div>
+
+  <!-- Ilustración SVG: amanecer en la granja + huevo con sello de frescura -->
+  <svg class="hero-art" viewBox="0 0 420 340" role="img" aria-label="Huevo fresco al amanecer en la granja">
+    <defs>
+      <radialGradient id="sol" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#FFE08A"/><stop offset="1" stop-color="#F6B712"/></radialGradient>
+      <linearGradient id="cascara" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6C9A0"/><stop offset=".6" stop-color="#E7A06A"/><stop offset="1" stop-color="#C97B45"/></linearGradient>
+    </defs>
+    <circle cx="210" cy="190" r="150" fill="url(#sol)"/>
+    <g stroke="#F6B712" stroke-width="10" stroke-linecap="round" opacity=".55">
+      <line x1="210" y1="20" x2="210" y2="0"/><line x1="90" y1="70" x2="74" y2="54"/><line x1="330" y1="70" x2="346" y2="54"/>
+      <line x1="40" y1="170" x2="18" y2="166"/><line x1="380" y1="170" x2="402" y2="166"/>
+    </g>
+    <path d="M0 260 Q110 200 220 248 T420 236 V340 H0Z" fill="#2F7A3A"/>
+    <path d="M0 290 Q140 250 260 286 T420 280 V340 H0Z" fill="#0F4D2A"/>
+    <g transform="translate(300 214)"><rect width="46" height="34" fill="#1F6B35"/><path d="M-6 0 L23 -22 L52 0Z" fill="#165A2C"/><rect x="15" y="12" width="16" height="22" fill="#F8EBD3"/></g>
+    <ellipse cx="190" cy="296" rx="78" ry="12" fill="#0A3A1F" opacity=".45"/>
+    <path d="M190 112 C236 112 266 186 266 228 C266 270 232 296 190 296 C148 296 114 270 114 228 C114 186 144 112 190 112Z" fill="url(#cascara)"/>
+    <ellipse cx="160" cy="170" rx="14" ry="26" fill="#fff" opacity=".45" transform="rotate(18 160 170)"/>
+    <g transform="translate(232 128)">
+      <circle r="38" fill="#D8701A"/><circle r="31" fill="none" stroke="#F8EBD3" stroke-width="2" stroke-dasharray="4 4"/>
+      <text y="-4" text-anchor="middle" fill="#fff" font-family="Baloo 2" font-weight="800" font-size="24" id="selloDias">2</text>
+      <text y="14" text-anchor="middle" fill="#FFF3DD" font-family="Nunito" font-weight="700" font-size="10">días</text>
+    </g>
+  </svg>
+</section>
+
+<section class="band mvo" aria-label="Visión, misión y objetivo">
+  <article class="card"><h2>Misión</h2><p>Distribuir huevos frescos, clasificados por peso y en perfecto estado a hogares y panaderías, garantizando entregas rápidas, precios justos y rotación diaria del inventario.</p></article>
+  <article class="card"><h2>Visión</h2><p>Ser en 2030 la distribuidora de huevo de referencia en la región por su frescura comprobable, con trazabilidad de cada lote desde la granja hasta el cliente.</p></article>
+  <article class="card"><h2>Objetivo</h2><p>Entregar cada huevo con <b>máximo 7 días desde la postura</b> y mantener en cero el producto vencido, mediante control de inventario por lotes y pedidos en línea con pago contraentrega.</p></article>
+</section>
+
+<section id="tamanos" class="band sizes">
+  <h2 class="sec-title">Tamaños de huevo</h2>
+  <p class="sec-sub">Clasificación por peso según la norma colombiana NTC 1240. Toca un tamaño para ver su uso recomendado.</p>
+  <div class="size-grid" id="sizeGrid"></div>
+  <div class="size-detail" id="sizeDetail" aria-live="polite"></div>
+
+  <div class="test card">
+    <h3>Prueba de frescura en casa</h3>
+    <p>Sumerge el huevo en un vaso con agua. ¿Qué hace?</p>
+    <div class="chips" id="pruebaChips">
+      <button data-r="0">Se hunde y queda acostado</button>
+      <button data-r="1">Se hunde y queda inclinado</button>
+      <button data-r="2">Queda de pie en el fondo</button>
+      <button data-r="3">Flota</button>
+    </div>
+    <p class="test-out" id="pruebaOut">Elige una opción.</p>
+  </div>
+</section>
+
+<!-- ============ SECCIÓN 2: RECETAS Y NUTRICIÓN ============ -->
+<section id="recetas" class="band recipes">
+  <h2 class="sec-title">Recetas y recomendaciones nutricionales</h2>
+  <div class="chips" id="filtroRecetas">
+    <button class="on" data-f="todas">Todas</button>
+    <button data-f="hogar">Hogar</button>
+    <button data-f="panaderia">Panadería</button>
+  </div>
+  <div class="recipe-grid" id="recipeGrid"></div>
+
+  <div class="nutri">
+    <div>
+      <h3>¿Qué aporta un huevo grande (≈50 g)?</h3>
+      <p class="muted">Valores aproximados. El huevo es una proteína completa: contiene los 9 aminoácidos esenciales.</p>
+      <div id="nutriBars"></div>
+    </div>
+    <div class="card tips">
+      <h3>Recomendaciones</h3>
+      <ul>
+        <li><b>Desayuno con proteína:</b> 1–2 huevos ayudan a mantener la saciedad durante la mañana.</li>
+        <li><b>Niños y adolescentes:</b> la colina y la proteína apoyan el crecimiento y el desarrollo cerebral.</li>
+        <li><b>Adultos mayores:</b> proteína fácil de masticar que ayuda a conservar la masa muscular.</li>
+        <li><b>Deportistas:</b> buena opción después de entrenar, junto con carbohidratos.</li>
+        <li><b>Siempre bien cocido</b> en embarazo, niños pequeños y personas con defensas bajas.</li>
+        <li><b>Refrigera</b> a menos de 7 °C y no laves el huevo hasta el momento de usarlo.</li>
+      </ul>
+      <p class="muted small">Información general; no reemplaza la orientación de un profesional de la salud.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECCIÓN 3: PEDIDOS ============ -->
+<section id="pedidos" class="band orders">
+  <h2 class="sec-title">Zona de pedidos</h2>
+  <p class="sec-sub">Pago <b>contraentrega</b>. Precio por cubeta de 30 huevos (precios de ejemplo).</p>
+
+  <div class="toggle" role="tablist" id="tipoVenta">
+    <button class="on" data-t="detal" role="tab">Al detal</button>
+    <button data-t="mayor" role="tab">Por mayor · panaderías (mín. 10 cubetas)</button>
+  </div>
+
+  <div class="order-layout">
+    <div class="catalog" id="catalogo"></div>
+
+    <aside class="cart card">
+      <h3>Tu pedido</h3>
+      <div id="carritoLista"><p class="muted">Aún no has agregado productos.</p></div>
+      <div class="total"><span>Total</span><strong id="carritoTotal">$0</strong></div>
+      <p class="msg" id="pedidoMsg" aria-live="polite"></p>
+      <div id="datosEntrega" class="muted small">Inicia sesión o regístrate para confirmar el pedido.</div>
+      <button class="btn btn-green full" id="btnConfirmar">Confirmar pedido contraentrega</button>
+      <a class="btn btn-wa full" id="btnWa" href="#" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+      <p class="muted small">WhatsApp: <span id="waNumero"></span></p>
+    </aside>
+  </div>
+</section>
+
+<!-- ============ INVENTARIO (solo administrador) ============ -->
+<section id="inventario" class="band inventory" hidden>
+  <h2 class="sec-title">Control de inventario</h2>
+  <p class="sec-sub">Lotes ordenados del más antiguo al más reciente: despacha siempre primero los de arriba.</p>
+
+  <div class="kpis" id="kpis"></div>
+
+  <form class="card lot-form" id="formLote">
+    <h3>Registrar lote de entrada</h3>
+    <label>Tamaño<select id="loteTam" required></select></label>
+    <label>Cubetas<input type="number" id="loteCant" min="1" value="20" required></label>
+    <label>Fecha de postura<input type="date" id="loteFecha" required></label>
+    <label>Granja / proveedor<input type="text" id="loteProv" placeholder="Granja El Rosal" required></label>
+    <button class="btn btn-green">Agregar lote</button>
+  </form>
+
+  <h3>Lotes en bodega</h3>
+  <div class="scroll"><table class="stack" id="tablaLotes"><thead><tr><th>Lote</th><th>Tamaño</th><th>Cubetas</th><th>Postura</th><th>Días</th><th>Estado</th><th></th></tr></thead><tbody></tbody></table></div>
+
+  <h3>Pedidos recibidos</h3>
+  <div class="scroll"><table class="stack" id="tablaPedidos"><thead><tr><th>N.º</th><th>Cliente</th><th>Dirección</th><th>Detalle</th><th>Total</th><th>Estado</th></tr></thead><tbody></tbody></table></div>
+</section>
+</main>
+
+<footer class="foot band">
+  <img src="img/logo.png" alt="" width="70" height="60">
+  <p><b>Distribuidora de Huevos JD</b> · Calidad y frescura en cada huevo<br><span class="small">Proyecto académico de ejemplo · datos y precios ficticios</span></p>
+</footer>
+
+<a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <svg viewBox="0 0 24 24" width="28" height="28"><path fill="#fff" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.6.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3a.5.5 0 0 0 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.3c0-.1-.2-.2-.5-.3Z"/></svg>
+</a>
+
+<!-- ============ VENTANA DE ACCESO (registro / ingreso) ============ -->
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+    <button class="x" id="cerrarModal" aria-label="Cerrar">×</button>
+    <h2 id="modalTitulo">Acceso</h2>
+    <div class="toggle" id="tabsAcceso">
+      <button class="on" data-v="registro">Registrarme</button>
+      <button data-v="ingreso">Ya tengo cuenta</button>
+    </div>
+    <form id="formRegistro" novalidate>
+      <label>Correo electrónico<input type="email" id="regCorreo" autocomplete="email" required></label>
+      <label>Celular<input type="tel" id="regCel" placeholder="3001234567" inputmode="numeric" required></label>
+      <label>Dirección de entrega<input type="text" id="regDir" placeholder="Calle 10 # 5-20, barrio…" required></label>
+      <button class="btn btn-green full">Registrarme</button>
+    </form>
+    <form id="formIngreso" novalidate hidden>
+      <label>Correo electrónico<input type="email" id="ingCorreo" autocomplete="email" required></label>
+      <button class="btn btn-green full">Ingresar</button>
+    </form>
+    <p class="msg" id="accesoMsg" aria-live="polite"></p>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+/*
+  Distribuidora de Huevos JD · Estilos
+  Colores de marca: verde (confianza), amarillo (frescura), naranja (venta), crema (limpieza)
+  Tipografías: Baloo 2 (títulos) + Nunito (texto)
+*/
+
+/* ---------- 1. Paleta (variables) ---------- */
+:root {
+  color-scheme: light dark;
+  --verde: #0F4D2A;
+  --verde-2: #1F6B35;
+  --amarillo: #F6B712;
+  --naranja: #D8701A;
+  --crema: #F8EBD3;
+  --wa: #1FA855;
+
+  --bg: light-dark(#FDF6E9, #0C2316);
+  --bg-2: light-dark(var(--crema), #12301F);
+  --panel: light-dark(#FFFFFF, #163926);
+  --ink: light-dark(#1E2A1F, #F8EBD3);
+  --muted: light-dark(#5B6457, #C9C2AE);
+  --line: light-dark(#E6D7B8, #2B5238);
+  --title: light-dark(var(--verde), #FFD45C);
+  --ok: light-dark(#1F7A3A, #6BD18B);
+  --warn: light-dark(#A86400, #FFC14D);
+  --bad: light-dark(#B3261E, #FF8A80);
+}
+:root[data-theme=light] { color-scheme: light; }
+:root[data-theme=dark]  { color-scheme: dark; }
+
+/* ---------- 2. Base ---------- */
+* { box-sizing: border-box; min-width: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 Nunito, system-ui, sans-serif; overflow-x: clip; }
+h1, h2, h3 { font-family: "Baloo 2", system-ui, sans-serif; line-height: 1.1; margin: 0 0 .4em; color: var(--title); text-wrap: balance; }
+h1 { font-size: clamp(32px, 4.6vw, 52px); }
+h2 { font-size: 26px; }
+h3 { font-size: 20px; }
+p { margin: 0 0 .8em; }
+img { max-width: 100%; height: auto; }
+[hidden] { display: none !important; }
+.band { padding: clamp(28px, 4vw, 64px) max(5vw, 16px); }
+.band > * { max-width: 1240px; margin-inline: auto; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.sec-title { font-size: clamp(28px, 3.4vw, 40px); }
+.sec-sub { color: var(--muted); margin-bottom: 1.4em; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; }
+.scroll { overflow-x: auto; }
+
+/* ---------- 3. Botones y controles ---------- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 20px; border: 0; border-radius: 999px; font: 700 16px Nunito, sans-serif; cursor: pointer; text-decoration: none; transition: transform .15s; }
+.btn:hover { transform: translateY(-1px); }
+.btn-green { background: var(--verde); color: #fff; }
+.btn-sun { background: var(--amarillo); color: #2A1E00; }
+.btn-ghost { background: transparent; color: var(--title); border: 2px solid currentColor; }
+.btn-wa { background: var(--wa); color: #fff; }
+.btn-orange { background: var(--naranja); color: #fff; }
+.full { width: 100%; margin-top: 10px; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--naranja); outline-offset: 2px; }
+label { display: grid; gap: 4px; font-weight: 700; font-size: 14px; }
+input, select { min-height: 44px; font: 16px Nunito, sans-serif; padding: 8px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); }
+.chips, .toggle { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.chips button, .toggle button { min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 2px solid var(--line); background: var(--panel); color: var(--ink); font: 700 15px Nunito, sans-serif; cursor: pointer; }
+.chips button.on, .toggle button.on { background: var(--verde); border-color: var(--verde); color: #fff; }
+.msg { min-height: 1.4em; font-weight: 700; margin: 8px 0 0; }
+.msg.ok { color: var(--ok); } .msg.err { color: var(--bad); }
+
+/* ---------- 4. Encabezado: logo | menú | acceso ---------- */
+.top { position: sticky; top: 0; z-index: 20; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; padding: 8px max(3vw, 12px); background: var(--verde); color: #fff; box-shadow: 0 2px 12px #0003; }
+.brand { display: flex; align-items: center; gap: 8px; color: #fff; text-decoration: none; font: 800 20px "Baloo 2", sans-serif; }
+.brand img { width: 64px; background: var(--crema); border-radius: 12px; padding: 2px; }
+.brand b { color: var(--amarillo); }
+.menu { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; }
+.menu a { color: #fff; text-decoration: none; font-weight: 700; padding: 10px 14px; border-radius: 999px; }
+.menu a:hover, .menu a.activo { background: #ffffff22; color: var(--amarillo); }
+.access { display: flex; align-items: center; gap: 8px; }
+.user-chip { font-size: 14px; font-weight: 700; background: #ffffff1c; padding: 6px 12px; border-radius: 999px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.access .btn { min-height: 40px; padding: 8px 14px; font-size: 15px; }
+
+/* ---------- 5. Sección 1: héroe, misión, tamaños ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 32px; align-items: center; background: linear-gradient(180deg, var(--bg-2), var(--bg)); max-width: none; }
+.hero > * { margin: 0; }
+.kicker { font-weight: 800; color: var(--naranja); margin-bottom: .4em; }
+.lead { font-size: 18px; max-width: 52ch; }
+.hero-art { width: 100%; max-height: 380px; }
+.fresh-now { display: inline-flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; font-weight: 700; margin: 6px 0 18px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 var(--ok); animation: latido 2s infinite; }
+@keyframes latido { 70% { box-shadow: 0 0 0 10px transparent; } }
+.hero-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.mvo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; background: var(--verde); }
+.mvo .card { background: #ffffff10; border-color: #ffffff26; color: var(--crema); }
+.mvo h2 { color: var(--amarillo); }
+
+.size-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.size { display: grid; justify-items: center; gap: 4px; padding: 16px 8px; background: var(--panel); border: 2px solid var(--line); border-radius: 18px; cursor: pointer; color: var(--ink); font: inherit; }
+.size.on { border-color: var(--naranja); box-shadow: 0 6px 18px #d8701a33; }
+.size svg { height: 70px; }
+.size strong { font: 800 22px "Baloo 2", sans-serif; color: var(--title); }
+.size span { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.size-detail { margin: 16px 0 28px; padding: 16px 20px; border-left: 6px solid var(--amarillo); background: var(--bg-2); border-radius: 0 14px 14px 0; }
+.test { margin-top: 8px; }
+.test-out { font-weight: 700; }
+
+/* ---------- 6. Sección 2: recetas y nutrición ---------- */
+.recipes { background: var(--bg-2); }
+.recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 36px; }
+.recipe { display: flex; flex-direction: column; gap: 6px; }
+.recipe .tag { align-self: flex-start; font-size: 13px; font-weight: 800; padding: 2px 10px; border-radius: 999px; background: var(--amarillo); color: #2A1E00; }
+.recipe .tag.panaderia { background: var(--naranja); color: #fff; }
+.recipe .meta { font-size: 14px; color: var(--muted); }
+.recipe details summary { cursor: pointer; font-weight: 800; color: var(--title); min-height: 32px; }
+.recipe ol, .recipe ul { padding-left: 20px; margin: 6px 0; }
+.nutri { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.bar-row { display: grid; grid-template-columns: 9em minmax(0, 1fr) 5.5em; gap: 10px; align-items: center; margin: 10px 0; }
+.bar-row .val { text-align: right; font-weight: 800; white-space: nowrap; }
+.bar { height: 14px; background: var(--line); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--amarillo), var(--naranja)); border-radius: 999px; width: 0; transition: width 1s ease; }
+.bar-row small { grid-column: 2 / 4; color: var(--muted); margin-top: -6px; }
+.tips ul { padding-left: 18px; } .tips li { margin-bottom: 6px; }
+
+/* ---------- 7. Sección 3: pedidos ---------- */
+.order-layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+.catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+.prod { display: grid; gap: 8px; }
+.prod .price { font: 800 24px "Baloo 2", sans-serif; color: var(--naranja); white-space: nowrap; }
+.prod .stock { font-size: 13px; font-weight: 700; }
+.stepper { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 6px; }
+.stepper button { min-height: 44px; border-radius: 12px; border: 0; background: var(--verde); color: #fff; font: 800 20px Nunito; cursor: pointer; }
+.stepper input { text-align: center; }
+.cart { position: sticky; top: 92px; }
+.cart-line { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.cart-line span:last-child { white-space: nowrap; font-weight: 700; }
+.total { display: flex; justify-content: space-between; font: 800 22px "Baloo 2", sans-serif; margin-top: 10px; }
+
+/* ---------- 8. Inventario ---------- */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+.kpi b { display: block; font: 800 34px "Baloo 2", sans-serif; color: var(--title); }
+.lot-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 12px; align-items: end; margin-bottom: 28px; }
+.lot-form h3 { grid-column: 1 / -1; }
+table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 14px; overflow: hidden; margin-bottom: 28px; font-size: 15px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: var(--verde); color: #fff; font-weight: 700; }
+td.num { text-align: right; white-space: nowrap; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-weight: 800; font-size: 13px; white-space: nowrap; }
+.b-ok { background: #1F7A3A22; color: var(--ok); }
+.b-fresh { background: #F6B71233; color: var(--warn); }
+.b-warn { background: #D8701A33; color: var(--naranja); }
+.b-bad { background: #B3261E22; color: var(--bad); }
+.link { background: none; border: 0; color: var(--bad); font-weight: 700; cursor: pointer; min-height: 32px; }
+
+/* ---------- 9. Pie, WhatsApp flotante y modal ---------- */
+.foot { display: flex; align-items: center; justify-content: center; gap: 16px; background: var(--verde); color: var(--crema); text-align: left; }
+.foot > * { margin: 0; }
+.foot img { background: var(--crema); border-radius: 12px; }
+.wa-float { position: fixed; right: 18px; bottom: 18px; width: 58px; height: 58px; display: grid; place-items: center; border-radius: 50%; background: var(--wa); box-shadow: 0 6px 18px #0005; z-index: 30; }
+.modal { position: fixed; inset: 0; background: #0009; display: grid; place-items: center; z-index: 40; padding: 16px; }
+.modal-box { position: relative; width: min(440px, 100%); background: var(--panel); border-radius: 22px; padding: 26px; border-top: 8px solid var(--amarillo); }
+.modal-box form { display: grid; gap: 12px; }
+.x { position: absolute; top: 8px; right: 10px; width: 44px; height: 44px; border: 0; background: none; font-size: 28px; color: var(--ink); cursor: pointer; }
+
+/* ---------- 10. Responsive ---------- */
+@media (max-width: 980px) {
+  .top { grid-template-columns: auto auto; }
+  .menu { grid-column: 1 / -1; grid-row: 2; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+  .menu a { flex: none; }
+  .size-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .order-layout, .nutri { grid-template-columns: minmax(0, 1fr); }
+  .cart { position: static; }
+  .lot-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .hero, .mvo { grid-template-columns: minmax(0, 1fr); }
+  .brand span { display: none; }
+  .size-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lot-form { grid-template-columns: minmax(0, 1fr); }
+  .bar-row { grid-template-columns: 7em minmax(0, 1fr) 4.8em; }
+  .user-chip { max-width: 120px; }
+  table { font-size: 13px; }
+  .stack thead { display: none; }
+  .stack tr { display: grid; padding-block: 10px; border-bottom: 1px solid var(--line); }
+  .stack td { display: flow-root; border: 0; padding: 3px 12px; padding-inline-start: 8em; text-align: start; }
+  .stack td::before { content: attr(data-l); float: inline-start; width: 7.5em; margin-inline-start: -8em; font-weight: 700; color: var(--muted); }
+  .stack td:empty { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .dot { animation: none; } .bar i { transition: none; } .btn { transition: none; }
+}
