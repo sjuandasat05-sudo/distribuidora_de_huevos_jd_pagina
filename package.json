@@ -1,0 +1,11 @@
+{
+  "name": "distribuidora-huevos-jd",
+  "version": "1.0.0",
+  "description": "Página web de Distribuidora de Huevos JD: venta de huevo fresco y control de inventario",
+  "author": "Juan David Salazar Torres",
+  "private": true,
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js"
+  }
+}
