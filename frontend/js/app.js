@@ -8,8 +8,8 @@
    ========================================================= */
 {
   /* ---------- 1. Configuración y datos ---------- */
-  const ADMIN = 'sjuandasat05@gamail.com';   // único usuario con acceso al inventario
-  const WA_NUMERO = '3005461962';          // número de ejemplo: cámbialo por el real (57 + celular)
+  const ADMIN = 'sjuandasat05@gmail.com';   // único usuario con acceso al inventario
+  const WA_NUMERO = '3001234567';          // número de ejemplo: cámbialo por el real (57 + celular)
   const MIN_MAYOR = 10;                      // cubetas mínimas para venta por mayor
   const DIAS_MAX_VENTA = 21;                 // después de 21 días el lote no se vende
 
