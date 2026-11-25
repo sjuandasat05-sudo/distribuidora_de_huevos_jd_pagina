@@ -9,11 +9,30 @@
 {
   /* ---------- 1. Configuración y datos ---------- */
   const ADMIN = 'sjuandasat05@gmail.com';   // único usuario con acceso al inventario
-  const WA_NUMERO = '3001234567';          // número de ejemplo: cámbialo por el real (57 + celular)
+  const WA_NUMERO = '573005461962';          // número de ejemplo: cámbialo por el real (57 + celular)
   const MIN_MAYOR = 10;                      // cubetas mínimas para venta por mayor
   const DIAS_MAX_VENTA = 21;                 // después de 21 días el lote no se vende
+  const USAR_BASE_DATOS = true;              // true = guarda usuarios y pedidos en MySQL · false = solo en el navegador
+  const API = '/api';                        // dirección de la API del servidor (backend/server.js)
 
-  const TAMANOS = [
+  // Envía una petición al servidor y devuelve la respuesta en JSON
+  async function api(ruta, opciones = {}) {
+    let respuesta;
+    try {
+      respuesta = await fetch(API + ruta, {
+        method: opciones.method || 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: opciones.body ? JSON.stringify(opciones.body) : undefined
+      });
+    } catch {
+      throw new Error('No hay conexión con el servidor. Ábrela con npm start en http://localhost:3000');
+    }
+    const datos = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) throw new Error(datos.mensaje || 'Error en el servidor');
+    return datos;
+  }
+
+  let TAMANOS = [
     { id: 'jumbo', nombre: 'Jumbo', peso: '≥ 78 g',      esc: 1.18, detal: 22000, mayor: 19800, uso: 'Yema grande y mucha clara. Ideal para desayunos abundantes y huevos fritos o pochados de presentación.' },
     { id: 'aaa',   nombre: 'AAA',   peso: '67 – 77,9 g', esc: 1.08, detal: 18500, mayor: 16700, uso: 'El favorito de los hogares: rinde en tortillas, pericos y preparaciones donde el huevo es protagonista.' },
     { id: 'aa',    nombre: 'AA',    peso: '60 – 66,9 g', esc: 1.00, detal: 16500, mayor: 14900, uso: 'El estándar de las recetas de panadería y repostería: peso uniforme que da resultados constantes.' },
@@ -86,8 +105,11 @@
   /* ---------- 4. Sección 1: tamaños y prueba de frescura ---------- */
   const huevoSVG = (esc) => `<svg viewBox="0 0 60 80" aria-hidden="true"><path transform="translate(30 44) scale(${esc}) translate(-30 -44)" d="M30 8C46 8 54 36 54 50C54 66 43 76 30 76C17 76 6 66 6 50C6 36 14 8 30 8Z" fill="#E7A06A"/><ellipse cx="21" cy="32" rx="4" ry="8" fill="#fff" opacity=".5"/></svg>`;
 
-  $('#sizeGrid').innerHTML = TAMANOS.map(t => `
-    <button class="size" data-id="${t.id}">${huevoSVG(t.esc)}<strong>${t.nombre}</strong><span>${t.peso}</span></button>`).join('');
+  function pintarTamanos() {
+    $('#sizeGrid').innerHTML = TAMANOS.map(t => `
+      <button class="size" data-id="${t.id}">${huevoSVG(t.esc)}<strong>${t.nombre}</strong><span>${t.peso}</span></button>`).join('');
+  }
+  pintarTamanos();
 
   function mostrarTamano(id) {
     const t = TAMANOS.find(x => x.id === id);
@@ -95,7 +117,7 @@
     $('#sizeDetail').innerHTML = `<h3>Huevo ${t.nombre} · ${t.peso}</h3><p>${t.uso}</p><p class="muted small">Detal ${pesos(t.detal)} · Mayorista ${pesos(t.mayor)} por cubeta de 30.</p>`;
   }
   $('#sizeGrid').addEventListener('click', e => { const b = e.target.closest('.size'); if (b) mostrarTamano(b.dataset.id); });
-  mostrarTamano('aa');
+  mostrarTamano(TAMANOS.some(t => t.id === 'aa') ? 'aa' : TAMANOS[0].id);
 
   const PRUEBA = [
     'Muy fresco (menos de una semana). Perfecto para cualquier preparación.',
@@ -223,7 +245,7 @@
 
   function aviso(el, texto, ok) { el.textContent = texto; el.className = 'msg ' + (ok ? 'ok' : 'err'); }
 
-  $('#btnConfirmar').addEventListener('click', () => {
+  $('#btnConfirmar').addEventListener('click', async () => {
     const msg = $('#pedidoMsg'); const u = usuarioActual();
     if (!cubetasCarrito()) return aviso(msg, 'Agrega al menos una cubeta.');
     if (!u) { abrirModal('registro'); return aviso(msg, 'Primero regístrate o inicia sesión.'); }
@@ -231,26 +253,64 @@
     const falta = lineas().find(l => l.n > stockDe(l.t.id));
     if (falta) return aviso(msg, `Solo quedan ${stockDe(falta.t.id)} cubetas ${falta.t.nombre}.`);
 
-    const pedido = { n: db.seqPedido++, correo: u.correo, cel: u.cel, dir: u.dir, tipo: tipoVenta,
-      items: lineas().map(l => `${l.n} ${l.t.nombre}`), total: totalCarrito(), fecha: new Date().toISOString().slice(0, 10), estado: 'Pendiente' };
-    lineas().forEach(l => descontarFIFO(l.t.id, l.n));
-    db.pedidos.unshift(pedido); guardar();
+    let numero, total = totalCarrito();
+    if (USAR_BASE_DATOS) {
+      // Guarda el pedido en MySQL (tablas pedidos y detalle_pedido)
+      const boton = $('#btnConfirmar'); boton.disabled = true;
+      try {
+        const r = await api('/pedidos', { method: 'POST', body: {
+          correo: u.correo, tipo: tipoVenta,
+          items: lineas().map(l => ({ producto_id: l.t.id, cubetas: l.n }))
+        } });
+        numero = r.pedido.id; total = r.pedido.total;
+      } catch (error) {
+        return aviso(msg, error.message);
+      } finally {
+        boton.disabled = false;
+      }
+    } else {
+      numero = db.seqPedido++;
+      db.pedidos.unshift({ n: numero, correo: u.correo, cel: u.cel, dir: u.dir, tipo: tipoVenta,
+        items: lineas().map(l => `${l.n} ${l.t.nombre}`), total, fecha: new Date().toISOString().slice(0, 10), estado: 'Pendiente' });
+    }
+
+    lineas().forEach(l => descontarFIFO(l.t.id, l.n));   // el inventario de lotes sigue en el navegador
+    guardar();
     Object.keys(carrito).forEach(k => delete carrito[k]);
     pintarTodo();
-    aviso(msg, `Pedido N.º ${pedido.n} registrado. Pagas al recibir. Te contactaremos al ${u.cel}.`, true);
+    aviso(msg, `Pedido N.º ${numero} registrado por ${pesos(total)}. Pagas al recibir. Te contactaremos al ${u.cel}.`, true);
   });
 
   /* ---------- 7. Inventario (solo administrador) ---------- */
   $('#loteTam').innerHTML = TAMANOS.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
   $('#loteFecha').value = fechaHace(0); $('#loteFecha').max = fechaHace(0);
-  const nombreTam = (id) => TAMANOS.find(t => t.id === id).nombre;
+  const nombreTam = (id) => (TAMANOS.find(t => t.id === id) || { nombre: id }).nombre;
+
+  // Pedidos que ve el administrador: desde MySQL o desde el navegador
+  let pedidosBD = [];
+  const listaPedidos = () => USAR_BASE_DATOS ? pedidosBD : db.pedidos;
+
+  async function cargarPedidos() {
+    if (!USAR_BASE_DATOS || !esAdmin()) return;
+    try {
+      const filas = await api('/pedidos');
+      pedidosBD = filas.map(p => ({
+        n: p.id, correo: p.correo, cel: p.celular, dir: p.direccion, tipo: p.tipo,
+        items: [p.detalle], total: p.total, fecha: String(p.fecha).slice(0, 10), estado: p.estado
+      }));
+    } catch (error) {
+      pedidosBD = [];
+      console.error(error.message);
+    }
+    pintarInventario();
+  }
 
   function pintarInventario() {
     if (!esAdmin()) return;
     const lotes = [...db.lotes].sort((a, b) => a.fecha.localeCompare(b.fecha));
     const vendible = lotes.filter(l => diasDesde(l.fecha) <= DIAS_MAX_VENTA).reduce((s, l) => s + l.cant, 0);
     const alerta = lotes.filter(l => diasDesde(l.fecha) > 14).length;
-    const pend = db.pedidos.filter(p => p.estado !== 'Entregado').length;
+    const pend = listaPedidos().filter(p => p.estado !== 'Entregado').length;
     const edadProm = lotes.length ? Math.round(lotes.reduce((s, l) => s + diasDesde(l.fecha) * l.cant, 0) / lotes.reduce((s, l) => s + l.cant, 0)) : 0;
     $('#kpis').innerHTML = [
       ['Cubetas vendibles', vendible], ['Edad promedio (días)', edadProm],
@@ -264,7 +324,7 @@
         <td><span class="badge ${cls}">${txt}</span></td><td><button class="link" data-del="${l.id}">Dar de baja</button></td></tr>`;
     }).join('') || '<tr><td colspan="7">No hay lotes registrados.</td></tr>';
 
-    $('#tablaPedidos tbody').innerHTML = db.pedidos.map(p => `
+    $('#tablaPedidos tbody').innerHTML = listaPedidos().map(p => `
       <tr><td>${p.n}</td><td>${p.correo}<br><span class="muted small">${p.cel}</span></td><td>${p.dir}</td>
       <td>${p.items.join(', ')}<br><span class="muted small">${p.tipo === 'detal' ? 'Detal' : 'Mayorista'} · ${p.fecha}</span></td>
       <td class="num">${pesos(p.total)}</td>
@@ -282,9 +342,16 @@
     db.lotes = db.lotes.filter(l => l.id !== id); guardar(); pintarTodo();
   });
   const SIG = { Pendiente: 'Despachado', Despachado: 'Entregado', Entregado: 'Pendiente' };
-  $('#tablaPedidos').addEventListener('click', e => {
+  $('#tablaPedidos').addEventListener('click', async e => {
     const n = Number(e.target.dataset.ped); if (!n) return;
-    const p = db.pedidos.find(x => x.n === n); p.estado = SIG[p.estado]; guardar(); pintarInventario();
+    const p = listaPedidos().find(x => x.n === n);
+    if (USAR_BASE_DATOS) {
+      try { await api(`/pedidos/${n}/estado`, { method: 'PATCH', body: { estado: SIG[p.estado] } }); }
+      catch (error) { console.error(error.message); }
+      cargarPedidos();
+    } else {
+      p.estado = SIG[p.estado]; guardar(); pintarInventario();
+    }
   });
 
   /* ---------- 8. Acceso: registro / ingreso / salir ---------- */
@@ -305,7 +372,7 @@
   $('#modal').addEventListener('click', e => { if (e.target.id === 'modal') cerrarModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModal(); });
 
-  $('#formRegistro').addEventListener('submit', e => {
+  $('#formRegistro').addEventListener('submit', async e => {
     e.preventDefault();
     const correo = $('#regCorreo').value.trim().toLowerCase();
     const cel = $('#regCel').value.replace(/\D/g, '');
@@ -314,17 +381,40 @@
     if (!reCorreo.test(correo)) return aviso(m, 'Escribe un correo válido.');
     if (!reCel.test(cel)) return aviso(m, 'El celular debe tener 10 dígitos y empezar por 3.');
     if (dir.length < 8) return aviso(m, 'Escribe la dirección completa de entrega.');
+    if (USAR_BASE_DATOS) {
+      // Guarda el usuario en MySQL (tabla usuarios)
+      try {
+        const r = await api('/usuarios', { method: 'POST', body: { correo, celular: cel, direccion: dir } });
+        iniciarSesion({ correo: r.usuario.correo, cel: r.usuario.celular, dir: r.usuario.direccion });
+      } catch (error) {
+        aviso(m, error.message);
+      }
+      return;
+    }
     const existe = db.usuarios.find(u => u.correo === correo);
     if (existe) Object.assign(existe, { cel, dir }); else db.usuarios.push({ correo, cel, dir });
     iniciarSesion({ correo, cel, dir });
   });
 
-  $('#formIngreso').addEventListener('submit', e => {
+  $('#formIngreso').addEventListener('submit', async e => {
     e.preventDefault();
     const correo = $('#ingCorreo').value.trim().toLowerCase();
     const m = $('#accesoMsg');
     if (!reCorreo.test(correo)) return aviso(m, 'Escribe un correo válido.');
-    const u = db.usuarios.find(x => x.correo === correo) || (correo === ADMIN ? { correo, cel: '—', dir: 'Bodega principal' } : null);
+    if (correo === ADMIN) return iniciarSesion({ correo, cel: '—', dir: 'Bodega principal' });
+
+    let u = null;
+    if (USAR_BASE_DATOS) {
+      // Busca la cuenta en MySQL
+      try {
+        const r = await api(`/usuarios/${encodeURIComponent(correo)}`);
+        u = { correo: r.usuario.correo, cel: r.usuario.celular, dir: r.usuario.direccion };
+      } catch (error) {
+        if (!/no está registrado/.test(error.message)) return aviso(m, error.message);
+      }
+    } else {
+      u = db.usuarios.find(x => x.correo === correo) || null;
+    }
     if (!u) { cambiarVista('registro'); $('#regCorreo').value = correo; return aviso(m, 'Ese correo no está registrado. Completa tus datos.'); }
     iniciarSesion(u);
   });
@@ -362,6 +452,27 @@
   });
   obsTablas.observe(document.body, { childList: true, subtree: true });
 
-  function pintarTodo() { pintarAcceso(); pintarFrescuraHoy(); pintarCatalogo(); pintarCarrito(); pintarInventario(); }
+  // Toma de MySQL las cubetas activas y sus precios
+  async function cargarProductos() {
+    if (!USAR_BASE_DATOS) return;
+    try {
+      const productos = await api('/productos');
+      TAMANOS = TAMANOS
+        .filter(t => productos.some(p => p.id === t.id))
+        .map(t => {
+          const p = productos.find(x => x.id === t.id);
+          return { ...t, detal: p.precio_detal, mayor: p.precio_mayor };
+        });
+      pintarTamanos();
+      mostrarTamano(TAMANOS.some(t => t.id === 'aa') ? 'aa' : TAMANOS[0].id);
+      $('#loteTam').innerHTML = TAMANOS.map(t => `<option value="${t.id}">${t.nombre}</option>`).join('');
+      pintarCatalogo(); pintarCarrito();
+    } catch (error) {
+      console.error(error.message);   // si no hay servidor, se usan los precios de este archivo
+    }
+  }
+
+  function pintarTodo() { pintarAcceso(); pintarFrescuraHoy(); pintarCatalogo(); pintarCarrito(); pintarInventario(); cargarPedidos(); }
   pintarTodo();
+  cargarProductos();
 }

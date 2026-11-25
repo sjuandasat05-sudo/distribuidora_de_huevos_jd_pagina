@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { db } from './db.js';
+import { enviarConfirmacionPedido } from './correo.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -69,7 +70,7 @@ app.get('/api/usuarios/:correo', async (req, res) => {
   }
 });
 
-// 6. Registrar pedido (al detal o por mayor)
+// 6. Registrar pedido (al detal o por mayor) y enviar correo de confirmación
 app.post('/api/pedidos', async (req, res) => {
   const correo = String(req.body.correo || '').trim().toLowerCase();
   const tipo = req.body.tipo;
@@ -88,15 +89,16 @@ app.post('/api/pedidos', async (req, res) => {
 
   const conexion = await db.getConnection();
   try {
-    const [usuario] = await conexion.query('SELECT id FROM usuarios WHERE correo = ?', [correo]);
+    const [usuario] = await conexion.query('SELECT id, direccion FROM usuarios WHERE correo = ?', [correo]);
     if (!usuario.length) return res.status(404).json({ ok: false, mensaje: 'Primero debes registrarte' });
 
     // Los precios se toman de la base de datos, no del navegador
     const [productos] = await conexion.query(
-      'SELECT id, precio_detal, precio_mayor FROM productos WHERE activo = 1 AND id IN (?)',
+      'SELECT id, nombre, precio_detal, precio_mayor FROM productos WHERE activo = 1 AND id IN (?)',
       [lineas.map(l => l.producto_id)]
     );
     const precios = Object.fromEntries(productos.map(p => [p.id, tipo === 'detal' ? p.precio_detal : p.precio_mayor]));
+    const nombres = Object.fromEntries(productos.map(p => [p.id, p.nombre]));
     const falta = lineas.find(l => !(l.producto_id in precios));
     if (falta) return res.status(400).json({ ok: false, mensaje: `Producto no disponible: ${falta.producto_id}` });
 
@@ -117,6 +119,15 @@ app.post('/api/pedidos', async (req, res) => {
     }
     await conexion.commit();
     res.json({ ok: true, pedido: { id: pedido.insertId, total } });
+
+    // Envía el correo a la persona que hizo el pedido (si falla, el pedido igual queda guardado)
+    console.log(`Pedido N.º ${pedido.insertId} guardado. Enviando correo a ${correo}...`);
+    enviarConfirmacionPedido({
+      correo, numero: pedido.insertId, tipo, total, direccion: usuario[0].direccion,
+      lineas: lineas.map(l => ({
+        cubetas: l.cubetas, nombre: nombres[l.producto_id], subtotal: l.cubetas * precios[l.producto_id]
+      }))
+    }).catch(error => console.error('Error al enviar el correo:', error.message));
   } catch (error) {
     await conexion.rollback();
     res.status(500).json({ ok: false, mensaje: 'Error al registrar el pedido', error: error.message });
